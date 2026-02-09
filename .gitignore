@@ -1,0 +1,64 @@
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Web
+**/doc/api/
+/web/stack.css
+
+# Log files
+*.log
+*.log.temp
+
+# Symbols and maps
+app.*.symbols
+app.*.map.json
+
+# Android
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# iOS
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+/ios/Flutter/App.framework
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/Runner/GeneratedPluginRegistrant.h
+/ios/Runner/GeneratedPluginRegistrant.m
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/ephemeral/
+.last_build_id
+
+# macOS
+/macos/Flutter/ephemeral/
+/macos/Pods/
+
+# Miscellaneous
+.DS_Store
+.history
+.svn/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sensitive/Local Data
+users.json
+*.env
+*.key
+*.pem
+*.hive
+*.lock
+
+# Screenshots/Temp Assets
+flutter_*.png
+*.webp
+temp/
