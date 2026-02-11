@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../domain/entities/user.dart';
@@ -35,7 +36,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         _passwords.addAll(Map<String, String>.from(passwordsMap));
       }
     } catch (e) {
-      print('Error loading users: $e');
+      debugPrint('Error loading users: $e');
     }
     _initialized = true;
   }
@@ -50,7 +51,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       };
       await file.writeAsString(json.encode(data));
     } catch (e) {
-      print('Error saving users: $e');
+      debugPrint('Error saving users: $e');
     }
   }
 

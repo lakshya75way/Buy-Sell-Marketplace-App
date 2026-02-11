@@ -8,7 +8,6 @@ import '../../../../core/widgets/listing_skeleton.dart';
 import '../../../auth/presentation/controllers/auth_notifier.dart';
 import '../../domain/entities/listing.dart';
 import '../controllers/listing_notifier.dart';
-import '../widgets/listing_card.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});

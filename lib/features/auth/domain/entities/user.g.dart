@@ -15,6 +15,8 @@ _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
       location: json['location'] as String?,
       isVerified: json['isVerified'] as bool? ?? false,
       isSeller: json['isSeller'] as bool? ?? false,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
@@ -27,4 +29,6 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
       'location': instance.location,
       'isVerified': instance.isVerified,
       'isSeller': instance.isSeller,
+      'rating': instance.rating,
+      'reviewCount': instance.reviewCount,
     };

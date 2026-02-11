@@ -75,7 +75,7 @@ class SaleDetailsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -158,7 +158,92 @@ class SaleDetailsScreen extends ConsumerWidget {
             ),
 
             const SizedBox(height: 16),
-
+            if (listing.proofOfOwnership != null) ...[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue[100]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.verified_user, color: Colors.blue[700]),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Ownership Verification',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[900],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'You have provided proof of ownership for this item.',
+                      style: TextStyle(color: Colors.blue[800], fontSize: 13),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.blue[700],
+                          side: BorderSide(color: Colors.blue[300]!),
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          final proofPath = listing.proofOfOwnership!;
+                          final isImage = proofPath.toLowerCase().endsWith('.jpg') || 
+                                         proofPath.toLowerCase().endsWith('.jpeg') || 
+                                         proofPath.toLowerCase().endsWith('.png');
+                          
+                          if (isImage) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => Dialog.fullscreen(
+                                child: Scaffold(
+                                  appBar: AppBar(
+                                    title: const Text('Proof of Ownership'),
+                                    leading: IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ),
+                                  body: Center(
+                                    child: InteractiveViewer(
+                                      minScale: 0.5,
+                                      maxScale: 4.0,
+                                      child: AppImage(
+                                        imageUrl: proofPath,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          } else {
+                            final uri = proofPath.startsWith('http') 
+                                ? Uri.parse(proofPath) 
+                                : Uri.file(proofPath);
+                            launchUrl(uri, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        icon: const Icon(Icons.visibility),
+                        label: const Text('View Document'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             if (!isManualSale) ...[
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -167,7 +252,7 @@ class SaleDetailsScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -237,7 +322,7 @@ class SaleDetailsScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -282,7 +367,7 @@ class SaleDetailsScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                   border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                   border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -308,7 +393,7 @@ class SaleDetailsScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),

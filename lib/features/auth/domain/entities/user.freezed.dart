@@ -28,6 +28,8 @@ mixin _$User {
   String? get location => throw _privateConstructorUsedError;
   bool get isVerified => throw _privateConstructorUsedError;
   bool get isSeller => throw _privateConstructorUsedError;
+  double get rating => throw _privateConstructorUsedError;
+  int get reviewCount => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -47,7 +49,9 @@ abstract class $UserCopyWith<$Res> {
       String? phoneNumber,
       String? location,
       bool isVerified,
-      bool isSeller});
+      bool isSeller,
+      double rating,
+      int reviewCount});
 }
 
 /// @nodoc
@@ -71,6 +75,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? location = freezed,
     Object? isVerified = null,
     Object? isSeller = null,
+    Object? rating = null,
+    Object? reviewCount = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -105,6 +111,14 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.isSeller
           : isSeller // ignore: cast_nullable_to_non_nullable
               as bool,
+      rating: null == rating
+          ? _value.rating
+          : rating // ignore: cast_nullable_to_non_nullable
+              as double,
+      reviewCount: null == reviewCount
+          ? _value.reviewCount
+          : reviewCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -124,7 +138,9 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       String? phoneNumber,
       String? location,
       bool isVerified,
-      bool isSeller});
+      bool isSeller,
+      double rating,
+      int reviewCount});
 }
 
 /// @nodoc
@@ -145,6 +161,8 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? location = freezed,
     Object? isVerified = null,
     Object? isSeller = null,
+    Object? rating = null,
+    Object? reviewCount = null,
   }) {
     return _then(_$UserImpl(
       id: null == id
@@ -179,6 +197,14 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.isSeller
           : isSeller // ignore: cast_nullable_to_non_nullable
               as bool,
+      rating: null == rating
+          ? _value.rating
+          : rating // ignore: cast_nullable_to_non_nullable
+              as double,
+      reviewCount: null == reviewCount
+          ? _value.reviewCount
+          : reviewCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -194,7 +220,9 @@ class _$UserImpl implements _User {
       this.phoneNumber,
       this.location,
       this.isVerified = false,
-      this.isSeller = false});
+      this.isSeller = false,
+      this.rating = 0.0,
+      this.reviewCount = 0});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
@@ -217,10 +245,16 @@ class _$UserImpl implements _User {
   @override
   @JsonKey()
   final bool isSeller;
+  @override
+  @JsonKey()
+  final double rating;
+  @override
+  @JsonKey()
+  final int reviewCount;
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, name: $name, profileImage: $profileImage, phoneNumber: $phoneNumber, location: $location, isVerified: $isVerified, isSeller: $isSeller)';
+    return 'User(id: $id, email: $email, name: $name, profileImage: $profileImage, phoneNumber: $phoneNumber, location: $location, isVerified: $isVerified, isSeller: $isSeller, rating: $rating, reviewCount: $reviewCount)';
   }
 
   @override
@@ -240,13 +274,16 @@ class _$UserImpl implements _User {
             (identical(other.isVerified, isVerified) ||
                 other.isVerified == isVerified) &&
             (identical(other.isSeller, isSeller) ||
-                other.isSeller == isSeller));
+                other.isSeller == isSeller) &&
+            (identical(other.rating, rating) || other.rating == rating) &&
+            (identical(other.reviewCount, reviewCount) ||
+                other.reviewCount == reviewCount));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, email, name, profileImage,
-      phoneNumber, location, isVerified, isSeller);
+      phoneNumber, location, isVerified, isSeller, rating, reviewCount);
 
   @JsonKey(ignore: true)
   @override
@@ -271,7 +308,9 @@ abstract class _User implements User {
       final String? phoneNumber,
       final String? location,
       final bool isVerified,
-      final bool isSeller}) = _$UserImpl;
+      final bool isSeller,
+      final double rating,
+      final int reviewCount}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
@@ -291,6 +330,10 @@ abstract class _User implements User {
   bool get isVerified;
   @override
   bool get isSeller;
+  @override
+  double get rating;
+  @override
+  int get reviewCount;
   @override
   @JsonKey(ignore: true)
   _$$UserImplCopyWith<_$UserImpl> get copyWith =>

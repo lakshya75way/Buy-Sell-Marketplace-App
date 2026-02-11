@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/listing.dart';
+import '../../domain/entities/offer.dart';
 import '../../domain/entities/sort_option.dart';
 import '../../domain/repositories/listing_repository.dart';
 import '../providers/listing_providers.dart';
@@ -238,6 +239,69 @@ class ListingNotifier extends StateNotifier<ListingState> {
         );
       },
     );
+  }
+
+  Future<void> makeOffer(String listingId, Offer offer) async {
+    final listings = state.listings;
+    final index = listings.indexWhere((l) => l.id == listingId);
+    if (index != -1) {
+      final listing = listings[index];
+      final currentOffers = listing.offers ?? [];
+      final updatedListing = listing.copyWith(
+        offers: [...currentOffers, offer],
+      );
+      
+      await updateListing(updatedListing);
+    }
+  }
+
+  Future<void> acceptOffer(String listingId, String offerId) async {
+    final listings = state.listings;
+    final index = listings.indexWhere((l) => l.id == listingId);
+    if (index != -1) {
+      final listing = listings[index];
+      final currentOffers = listing.offers ?? [];
+      
+      final updatedOffers = currentOffers.map((o) {
+        if (o.id == offerId) {
+          return o.copyWith(status: OfferStatus.accepted);
+        }
+        if (o.status == OfferStatus.pending) {
+           return o.copyWith(status: OfferStatus.rejected);
+        }
+        return o;
+      }).toList();
+
+      final acceptedOffer = updatedOffers.firstWhere((o) => o.id == offerId);
+      
+      final updatedListing = listing.copyWith(
+        offers: updatedOffers,
+        status: ListingStatus.sold, 
+        buyerId: acceptedOffer.buyerId,
+        buyerName: acceptedOffer.buyerName,
+      );
+
+       await updateListing(updatedListing);
+    }
+  }
+
+  Future<void> rejectOffer(String listingId, String offerId) async {
+    final listings = state.listings;
+    final index = listings.indexWhere((l) => l.id == listingId);
+    if (index != -1) {
+      final listing = listings[index];
+      final currentOffers = listing.offers ?? [];
+      
+      final updatedOffers = currentOffers.map((o) {
+        if (o.id == offerId) {
+          return o.copyWith(status: OfferStatus.rejected);
+        }
+        return o;
+      }).toList();
+
+      final updatedListing = listing.copyWith(offers: updatedOffers);
+      await updateListing(updatedListing);
+    }
   }
 }
 

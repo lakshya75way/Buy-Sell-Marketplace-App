@@ -14,6 +14,8 @@ class User with _$User {
     String? location, 
     @Default(false) bool isVerified,
     @Default(false) bool isSeller,
+    @Default(0.0) double rating,
+    @Default(0) int reviewCount,
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);

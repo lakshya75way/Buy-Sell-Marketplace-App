@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -7,6 +6,8 @@ import '../../features/auth/presentation/controllers/auth_notifier.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/pin_entry_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/chat/presentation/screens/chat_list_screen.dart';
+import '../../features/chat/presentation/screens/chat_screen.dart';
 import '../../features/listings/domain/entities/listing.dart';
 import '../../features/listings/presentation/screens/checkout_screen.dart';
 import '../../features/listings/presentation/screens/create_listing_screen.dart';
@@ -153,6 +154,18 @@ GoRouter goRouter(GoRouterRef ref) {
               final listing = state.extra as Listing;
               return SaleDetailsScreen(listing: listing);
              },
+          ),
+          GoRoute(
+            path: 'messages',
+            builder: (context, state) => const ChatListScreen(),
+          ),
+          GoRoute(
+            path: 'chat/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              final otherUserName = state.extra as String?;
+              return ChatScreen(conversationId: id, otherUserName: otherUserName);
+            },
           ),
         ],
       ),

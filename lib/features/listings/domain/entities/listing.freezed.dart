@@ -40,6 +40,7 @@ mixin _$Listing {
   ListingStatus get status => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
+  List<Offer>? get offers => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -71,7 +72,8 @@ abstract class $ListingCopyWith<$Res> {
       String? buyerEmail,
       ListingStatus status,
       DateTime createdAt,
-      DateTime? updatedAt});
+      DateTime? updatedAt,
+      List<Offer>? offers});
 }
 
 /// @nodoc
@@ -107,6 +109,7 @@ class _$ListingCopyWithImpl<$Res, $Val extends Listing>
     Object? status = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
+    Object? offers = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -189,6 +192,10 @@ class _$ListingCopyWithImpl<$Res, $Val extends Listing>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      offers: freezed == offers
+          ? _value.offers
+          : offers // ignore: cast_nullable_to_non_nullable
+              as List<Offer>?,
     ) as $Val);
   }
 }
@@ -220,7 +227,8 @@ abstract class _$$ListingImplCopyWith<$Res> implements $ListingCopyWith<$Res> {
       String? buyerEmail,
       ListingStatus status,
       DateTime createdAt,
-      DateTime? updatedAt});
+      DateTime? updatedAt,
+      List<Offer>? offers});
 }
 
 /// @nodoc
@@ -254,6 +262,7 @@ class __$$ListingImplCopyWithImpl<$Res>
     Object? status = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
+    Object? offers = freezed,
   }) {
     return _then(_$ListingImpl(
       id: null == id
@@ -336,6 +345,10 @@ class __$$ListingImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      offers: freezed == offers
+          ? _value._offers
+          : offers // ignore: cast_nullable_to_non_nullable
+              as List<Offer>?,
     ));
   }
 }
@@ -363,9 +376,11 @@ class _$ListingImpl implements _Listing {
       this.buyerEmail,
       this.status = ListingStatus.active,
       required this.createdAt,
-      this.updatedAt})
+      this.updatedAt,
+      final List<Offer>? offers})
       : _images = images,
-        _videos = videos;
+        _videos = videos,
+        _offers = offers;
 
   factory _$ListingImpl.fromJson(Map<String, dynamic> json) =>
       _$$ListingImplFromJson(json);
@@ -425,10 +440,19 @@ class _$ListingImpl implements _Listing {
   final DateTime createdAt;
   @override
   final DateTime? updatedAt;
+  final List<Offer>? _offers;
+  @override
+  List<Offer>? get offers {
+    final value = _offers;
+    if (value == null) return null;
+    if (_offers is EqualUnmodifiableListView) return _offers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'Listing(id: $id, sellerId: $sellerId, sellerName: $sellerName, sellerEmail: $sellerEmail, sellerPhone: $sellerPhone, title: $title, description: $description, price: $price, category: $category, condition: $condition, images: $images, videos: $videos, location: $location, proofOfOwnership: $proofOfOwnership, buyerId: $buyerId, buyerName: $buyerName, buyerEmail: $buyerEmail, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Listing(id: $id, sellerId: $sellerId, sellerName: $sellerName, sellerEmail: $sellerEmail, sellerPhone: $sellerPhone, title: $title, description: $description, price: $price, category: $category, condition: $condition, images: $images, videos: $videos, location: $location, proofOfOwnership: $proofOfOwnership, buyerId: $buyerId, buyerName: $buyerName, buyerEmail: $buyerEmail, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, offers: $offers)';
   }
 
   @override
@@ -468,7 +492,8 @@ class _$ListingImpl implements _Listing {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            const DeepCollectionEquality().equals(other._offers, _offers));
   }
 
   @JsonKey(ignore: true)
@@ -494,7 +519,8 @@ class _$ListingImpl implements _Listing {
         buyerEmail,
         status,
         createdAt,
-        updatedAt
+        updatedAt,
+        const DeepCollectionEquality().hash(_offers)
       ]);
 
   @JsonKey(ignore: true)
@@ -532,7 +558,8 @@ abstract class _Listing implements Listing {
       final String? buyerEmail,
       final ListingStatus status,
       required final DateTime createdAt,
-      final DateTime? updatedAt}) = _$ListingImpl;
+      final DateTime? updatedAt,
+      final List<Offer>? offers}) = _$ListingImpl;
 
   factory _Listing.fromJson(Map<String, dynamic> json) = _$ListingImpl.fromJson;
 
@@ -576,6 +603,8 @@ abstract class _Listing implements Listing {
   DateTime get createdAt;
   @override
   DateTime? get updatedAt;
+  @override
+  List<Offer>? get offers;
   @override
   @JsonKey(ignore: true)
   _$$ListingImplCopyWith<_$ListingImpl> get copyWith =>

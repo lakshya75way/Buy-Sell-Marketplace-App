@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'offer.dart';
+
 part 'listing.freezed.dart';
 part 'listing.g.dart';
 
@@ -30,6 +32,7 @@ class Listing with _$Listing {
     @Default(ListingStatus.active) ListingStatus status,
     required DateTime createdAt,
     DateTime? updatedAt,
+    List<Offer>? offers,
   }) = _Listing;
 
   factory Listing.fromJson(Map<String, dynamic> json) => _$ListingFromJson(json);

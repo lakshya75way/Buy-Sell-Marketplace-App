@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../../core/providers/navigation_providers.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../auth/presentation/controllers/auth_notifier.dart';
 import '../../domain/entities/listing.dart';
 import '../controllers/listing_notifier.dart';
 import '../widgets/listing_card.dart';
-import '../../../../core/providers/navigation_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});

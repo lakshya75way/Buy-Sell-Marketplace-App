@@ -1,6 +1,8 @@
+import 'package:assessment_5_flutter/features/auth/presentation/controllers/auth_notifier.dart';
+import 'package:assessment_5_flutter/features/ratings/domain/entities/review.dart';
+import 'package:assessment_5_flutter/features/ratings/presentation/controllers/review_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -68,7 +70,7 @@ class OrderDetailsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -150,6 +152,92 @@ class OrderDetailsScreen extends ConsumerWidget {
             ),
 
             const SizedBox(height: 16),
+            if (listing.proofOfOwnership != null) ...[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue[100]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.verified_user, color: Colors.blue[700]),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Ownership Verification',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[900],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Seller has provided verified proof of ownership for this item.',
+                      style: TextStyle(color: Colors.blue[800], fontSize: 13),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.blue[700],
+                          side: BorderSide(color: Colors.blue[300]!),
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          final proofPath = listing.proofOfOwnership!;
+                          final isImage = proofPath.toLowerCase().endsWith('.jpg') || 
+                                         proofPath.toLowerCase().endsWith('.jpeg') || 
+                                         proofPath.toLowerCase().endsWith('.png');
+                          
+                          if (isImage) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => Dialog.fullscreen(
+                                child: Scaffold(
+                                  appBar: AppBar(
+                                    title: const Text('Proof of Ownership'),
+                                    leading: IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ),
+                                  body: Center(
+                                    child: InteractiveViewer(
+                                      minScale: 0.5,
+                                      maxScale: 4.0,
+                                      child: AppImage(
+                                        imageUrl: proofPath,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          } else {
+                            final uri = proofPath.startsWith('http') 
+                                ? Uri.parse(proofPath) 
+                                : Uri.file(proofPath);
+                            launchUrl(uri, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        icon: const Icon(Icons.visibility),
+                        label: const Text('View Document'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
@@ -157,7 +245,7 @@ class OrderDetailsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -227,7 +315,7 @@ class OrderDetailsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -273,7 +361,7 @@ class OrderDetailsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -300,7 +388,7 @@ class OrderDetailsScreen extends ConsumerWidget {
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                              backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
                               child: Text(
                                 listing.sellerName.isNotEmpty
                                     ? listing.sellerName.substring(0, 1).toUpperCase()
@@ -359,6 +447,15 @@ class OrderDetailsScreen extends ConsumerWidget {
                           onTap: listing.sellerPhone != null
                               ? () => _launchPhone(listing.sellerPhone!)
                               : null,
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () => _showRatingDialog(context, ref),
+                            icon: const Icon(Icons.star_outline),
+                            label: const Text('Rate Seller'),
+                          ),
                         ),
                       ],
                     ),
@@ -482,5 +579,85 @@ class OrderDetailsScreen extends ConsumerWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     }
+  }
+
+  void _showRatingDialog(BuildContext context, WidgetRef ref) {
+    double rating = 0;
+    final commentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Rate Seller'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('How was your experience with ${listing.sellerName}?'),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  return IconButton(
+                    onPressed: () => setState(() => rating = index + 1.0),
+                    icon: Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: Colors.amber,
+                      size: 32,
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: commentController,
+                decoration: const InputDecoration(
+                  labelText: 'Leave a comment (optional)',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            FilledButton(
+              onPressed: () async {
+                if (rating == 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select a rating')),
+                  );
+                  return;
+                }
+
+                final user = ref.read(authNotifierProvider).user;
+                if (user == null) return;
+
+                final review = Review(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  reviewerId: user.id,
+                  reviewerName: user.name,
+                  revieweeId: listing.sellerId,
+                  listingId: listing.id,
+                  rating: rating,
+                  comment: commentController.text,
+                  timestamp: DateTime.now().millisecondsSinceEpoch,
+                );
+
+                await ref.read(reviewNotifierProvider.notifier).addReview(review);
+                
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Review submitted successfully!')),
+                  );
+                }
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

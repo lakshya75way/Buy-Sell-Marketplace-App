@@ -33,6 +33,9 @@ _$ListingImpl _$$ListingImplFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      offers: (json['offers'] as List<dynamic>?)
+          ?.map((e) => Offer.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$$ListingImplToJson(_$ListingImpl instance) =>
@@ -57,6 +60,7 @@ Map<String, dynamic> _$$ListingImplToJson(_$ListingImpl instance) =>
       'status': _$ListingStatusEnumMap[instance.status]!,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
+      'offers': instance.offers,
     };
 
 const _$ListingCategoryEnumMap = {

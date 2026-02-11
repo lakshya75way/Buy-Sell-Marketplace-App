@@ -181,6 +181,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   _buildProfileTile(
                     context,
+                    icon: Icons.chat_bubble_outline_rounded,
+                    title: 'Messages',
+                    onTap: () => context.push('/messages'), 
+                  ),
+                  _buildProfileTile(
+                    context,
                     icon: Icons.favorite_border_rounded,
                     title: 'Wishlist',
                     onTap: () {

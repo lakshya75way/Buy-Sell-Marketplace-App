@@ -1,13 +1,13 @@
+import 'package:assessment_5_flutter/features/auth/presentation/controllers/auth_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
-import 'package:assessment_5_flutter/features/auth/presentation/controllers/auth_notifier.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../domain/entities/listing.dart';
-import '../../presentation/controllers/listing_notifier.dart';
+import '../controllers/listing_notifier.dart';
 
 class ListingCard extends ConsumerWidget {
   final Listing listing;

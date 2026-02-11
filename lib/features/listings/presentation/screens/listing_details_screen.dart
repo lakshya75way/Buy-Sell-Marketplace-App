@@ -1,14 +1,15 @@
+import 'package:assessment_5_flutter/core/widgets/app_image.dart';
+import 'package:assessment_5_flutter/features/auth/presentation/controllers/auth_notifier.dart';
+import 'package:assessment_5_flutter/features/chat/presentation/controllers/chat_notifier.dart';
+import 'package:assessment_5_flutter/features/listings/domain/entities/listing.dart';
+import 'package:assessment_5_flutter/features/listings/domain/entities/offer.dart';
+import 'package:assessment_5_flutter/features/listings/presentation/controllers/listing_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'package:assessment_5_flutter/features/auth/presentation/controllers/auth_notifier.dart';
-import '../../../../core/widgets/app_image.dart';
-import '../../domain/entities/listing.dart';
-import '../controllers/listing_notifier.dart';
 
 class ListingDetailsScreen extends ConsumerStatefulWidget {
   final String listingId;
@@ -85,7 +86,7 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
             leading: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.black26,
                   shape: BoxShape.circle,
                 ),
@@ -140,9 +141,9 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
                     )
                   else
                     Container(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       child: Center(
-                        child: Icon(Icons.image_outlined, size: 80, color: theme.colorScheme.primary.withOpacity(0.3)),
+                        child: Icon(Icons.image_outlined, size: 80, color: theme.colorScheme.primary.withValues(alpha: 0.3)),
                       ),
                     ),
                   const DecoratedBox(
@@ -216,7 +217,7 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
                             onPressed: () async {
                               Navigator.pop(context);
                               await ref.read(listingNotifierProvider.notifier).deleteListing(displayListing.id);
-                              if (mounted) context.pop();
+                              if (context.mounted) context.pop();
                             },
                             child: const Text('Delete', style: TextStyle(color: Colors.red)),
                           ),
@@ -302,9 +303,9 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.05),
+                        color: Colors.blue.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.blue.withOpacity(0.1)),
+                        border: Border.all(color: Colors.blue.withValues(alpha: 0.1)),
                       ),
                       child: Row(
                         children: [
@@ -318,6 +319,51 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
                           ),
                           TextButton(
                             onPressed: () {
+                              final proofPath = displayListing.proofOfOwnership;
+                              if (proofPath == null) return;
+
+                              final isImage = proofPath.toLowerCase().endsWith('.jpg') || 
+                                             proofPath.toLowerCase().endsWith('.jpeg') || 
+                                             proofPath.toLowerCase().endsWith('.png');
+                              
+                              if (isImage) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => Dialog.fullscreen(
+                                    child: Scaffold(
+                                      appBar: AppBar(
+                                        title: const Text('Proof of Ownership'),
+                                        leading: IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () => Navigator.pop(context),
+                                        ),
+                                      ),
+                                      body: Center(
+                                        child: InteractiveViewer(
+                                          minScale: 0.5,
+                                          maxScale: 4.0,
+                                          child: AppImage(
+                                            imageUrl: proofPath,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                final uri = proofPath.startsWith('http') 
+                                    ? Uri.parse(proofPath) 
+                                    : Uri.file(proofPath);
+                                launchUrl(uri, mode: LaunchMode.externalApplication).catchError((e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Could not open document: $e')),
+                                    );
+                                  }
+                                  return false;
+                                });
+                              }
                             },
                             child: const Text('View'),
                           ),
@@ -355,9 +401,9 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.05),
+                        color: Colors.green.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.green.withOpacity(0.1)),
+                        border: Border.all(color: Colors.green.withValues(alpha: 0.1)),
                       ),
                       child: Column(
                         children: [
@@ -393,7 +439,7 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
                     children: [
                       CircleAvatar(
                         radius: 28,
-                        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                         child: Text(
                           displayListing.sellerName.isNotEmpty ? displayListing.sellerName.substring(0, 1).toUpperCase() : '?',
                           style: TextStyle(
@@ -440,7 +486,7 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
           color: theme.colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -451,14 +497,22 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
           child: Row(
             children: [
               if (displayListing.status == ListingStatus.active) ...[
-                if (!isSeller)
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => _contactSeller(context, displayListing),
-                      icon: const Icon(Icons.chat_bubble_outline),
-                      label: const Text('Contact'),
-                    ),
-                  )
+                if (!isSeller) ...[
+                  _buildCompactActionButton(
+                    context,
+                    icon: Icons.chat_bubble_outline_rounded,
+                    label: 'Chat',
+                    onTap: () => _contactSeller(context, displayListing),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildCompactActionButton(
+                    context,
+                    icon: Icons.local_offer_outlined,
+                    label: 'Offer',
+                    onTap: () => _showMakeOfferDialog(context, displayListing),
+                  ),
+                  const SizedBox(width: 12),
+                ]
                 else
                   OutlinedButton.icon(
                     onPressed: () {
@@ -503,7 +557,7 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
 
               Expanded(
                 child: displayListing.status == ListingStatus.active
-                    ? FilledButton.icon(
+                    ? FilledButton(
                         onPressed: () {
                            if (isSeller) {
                               context.push('/edit-listing', extra: displayListing);
@@ -517,16 +571,23 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
                               }
                             }
                         },
-                        icon: Icon(isSeller ? Icons.edit : Icons.shopping_bag_outlined),
-                        label: Text(isSeller ? 'Edit' : 'Buy Now'),
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          isSeller ? 'Edit Listing' : 'Buy Now',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                        ),
                       )
                     : Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: (isBuyer || isSeller) ? Colors.green.withOpacity(0.1) : Colors.grey[200],
+                          color: (isBuyer || isSeller) ? Colors.green.withValues(alpha: 0.1) : Colors.grey[200],
                           borderRadius: BorderRadius.circular(16),
-                          border: (isBuyer || isSeller) ? Border.all(color: Colors.green.withOpacity(0.2)) : null,
+                          border: (isBuyer || isSeller) ? Border.all(color: Colors.green.withValues(alpha: 0.2)) : null,
                         ),
                         child: Text(
                           isBuyer ? 'ITEM PURCHASED' : (isSeller ? 'ITEM SOLD' : 'SOLD'),
@@ -624,9 +685,9 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: effectiveColor.withOpacity(0.1),
+        color: effectiveColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: effectiveColor.withOpacity(0.2)),
+        border: Border.all(color: effectiveColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -713,6 +774,12 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
   }
 
   void _contactSeller(BuildContext context, Listing listing) {
+    if (ref.read(authNotifierProvider).user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to contact the seller')),
+      );
+      return;
+    }
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -734,6 +801,13 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
+                    _buildContactOption(
+                      context,
+                      icon: Icons.chat_bubble_rounded,
+                      label: 'Chat',
+                      color: Theme.of(context).primaryColor,
+                      onTap: () => _startAppChat(context, listing),
+                    ),
                     _buildContactOption(
                       context,
                       icon: Icons.phone_rounded,
@@ -793,7 +867,31 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
     );
   }
 
-  Widget _buildContactOption(BuildContext context, {
+  Future<void> _startAppChat(BuildContext context, Listing listing) async {
+    Navigator.pop(context); // Close modal
+    
+    try {
+      final conversationId = await ref.read(chatNotifierProvider.notifier)
+          .startChat(listing.id, listing.sellerId);
+      
+      if (mounted) {
+        if (this.context.mounted) {
+          this.context.push('/chat/$conversationId', extra: listing.sellerName);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        if (this.context.mounted) {
+          ScaffoldMessenger.of(this.context).showSnackBar(
+            SnackBar(content: Text('Error starting chat: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Widget _buildContactOption(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required Color color,
@@ -822,6 +920,68 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
     );
   }
 
+  void _showMakeOfferDialog(BuildContext context, Listing listing) {
+    final amountController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Make an Offer'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+             Text('Enter your offer amount for ${listing.title}'),
+             const SizedBox(height: 16),
+             TextField(
+               controller: amountController,
+               decoration: const InputDecoration(
+                 labelText: 'Amount (₹)',
+                 prefixText: '₹ ',
+                 border: OutlineInputBorder(),
+               ),
+               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+             ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () async {
+              final amount = double.tryParse(amountController.text);
+              if (amount == null || amount <= 0) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                   const SnackBar(content: Text('Please enter a valid amount')),
+                 );
+                 return;
+              }
+
+              final user = ref.read(authNotifierProvider).user;
+              if (user == null) return;
+
+              final offer = Offer(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                listingId: listing.id,
+                buyerId: user.id,
+                buyerName: user.name,
+                amount: amount,
+                timestamp: DateTime.now().millisecondsSinceEpoch,
+              );
+
+              await ref.read(listingNotifierProvider.notifier).makeOffer(listing.id, offer);
+              
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                   const SnackBar(content: Text('Offer sent successfully!')),
+                );
+              }
+            },
+            child: const Text('Send Offer'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _shareListing(Listing listing) {
     SharePlus.instance.share(
       ShareParams(
@@ -829,6 +989,45 @@ class _ListingDetailsScreenState extends ConsumerState<ListingDetailsScreen> {
           'Description: ${listing.description}\n'
           'Location: ${listing.location}\n\n'
           'View it here: marketplace://open/listing/${listing.id}',
+      ),
+    );
+  }
+  Widget _buildCompactActionButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: theme.colorScheme.primary, size: 22),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
